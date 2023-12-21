@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <title>QR Generator - IPDS BPS Kabupaaten Karangasem</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+
+  <style>
+    .bd-placeholder-img {
+      font-size: 1.125rem;
+      text-anchor: middle;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    @media (min-width: 768px) {
+      .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+      }
+    }
+  </style>
+  <!-- Custom styles for this template -->
+  <link href="style.css" rel="stylesheet">
+</head>
+
+<body class="text-center">
+  <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+    <header class="masthead mb-auto">
+      <div class="inner">
+        <h5 class="masthead-brand font-weight-bold"><img
+            src="https://upload.wikimedia.org/wikipedia/commons/2/28/Lambang_Badan_Pusat_Statistik_%28BPS%29_Indonesia.svg"
+            width="60" height="30" alt="Lambang_Badan_Pusat_Statistik_Indonesia" />Badan Pusat
+          Statistik
+        </h5>
+      </div>
+    </header>
+
+    <div class="card">
+      <div class="card-header">
+        <h5 class="text-center">QR Code Generator</h5>
+      </div>
+      <div class="card-body">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Masukan Link URL" id="qrText" required />
+        </div>
+        <button type="submit" onclick="generateQR()" class="btn btn-primary btn-block">
+          Generate
+        </button>
+      </div>
+    </div>
+
+    <div class="mt-2">
+      <div class="col-lg-6 offset-lg-3">
+        <div id="imgBox" class="my-3 text-center">
+          <img src="" id="qrImage" width="250" height="250" alt="" />
+          <div class="flex">
+            <button id="pngdownload" class="mt-4 items-center justify-center btn btn-info">
+              DOWNLOAD
+            </button>
+            <button id="sharebutton" class="mt-4 flex items-center justify-center btn btn-warning">
+              SHARE
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mastfoot mt-auto">
+      <div class="inner">
+        <p>Made with &#128153 by IPDS BPS 5107</p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Script -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    function generateQR() {
+      if (qrText.value.length > 0) {
+        qrImage.src =
+          "https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=" +
+          qrText.value;
+        imgBox.classList.add("show-img");
+        // qrText2.innerHTML = qrText.value;
+      } else {
+        qrText.classList.add("error");
+        setTimeout(() => {
+          qrText.classList.remove("error");
+        }, 1000);
+      }
+    }
+
+    pngdownload.onclick = function () {
+      axios
+        ({
+          url: qrImage.src,
+          method: "GET",
+          responseType: "blob",
+        })
+        .then((response) => {
+          const url = window.URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement("a");
+          link.href = url;
+          link.setAttribute("download", "qr-code.png");
+          document.body.appendChild(link);
+          link.click();
+        });
+    };
+
+    sharebutton.onclick = function () {
+      if (navigator.share) {
+        navigator.share({
+          title: 'QR Code',
+          text: 'QR Code',
+          url: qrImage.src,
+        })
+          .then(() => console.log('Successful share'))
+          .catch((error) => console.log('Error sharing', error));
+      }
+    };
+  </script>
+
+</body>
+
+</html>
